@@ -1,0 +1,40 @@
+% Newton-Raphson Method to find a root of f(x) = x^3 - 6x^2 + 11x - 6
+
+clc; clear; close all;
+
+% Define the function and its derivative
+f = @(x) x.^3 - 6*x.^2 + 11*x - 6;
+df = @(x) 3*x.^2 - 12*x + 11; % Derivative of f(x)
+
+% Accept user input for initial guess, tolerance, and max iterations
+x0 = input('Enter the initial guess: ');
+tol = input('Enter the tolerance: ');
+max_iter = input('Enter the maximum number of iterations: ');
+
+% Newton-Raphson Iteration
+iter = 0;
+while iter < max_iter
+    fx = f(x0);
+    dfx = df(x0);
+    
+    if abs(dfx) < 1e-10
+        disp('Error: Derivative is too small, method may not converge.');
+        return;
+    end
+    
+    x1 = x0 - fx / dfx; % Newton-Raphson formula
+    
+    % Check for convergence
+    if abs(x1 - x0) < tol
+        fprintf('Approximate root: %.6f\n', x1);
+        fprintf('Iterations taken: %d\n', iter + 1);
+        return;
+    end
+    
+    x0 = x1;
+    iter = iter + 1;
+end
+
+% If max iterations reached without convergence
+fprintf('Method did not converge within %d iterations.\n', max_iter);
+fprintf('Last computed value: %.6f\n', x1);

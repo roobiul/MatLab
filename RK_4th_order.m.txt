@@ -1,0 +1,38 @@
+% Runge-Kutta 4th Order Method for solving dy/dx = -2xy
+
+clc; clear; close all;
+
+% Define the function dy/dx = -2xy
+f = @(x, y) -2 * x * y;
+
+% Accept user inputs
+a = input('Enter the start of the interval (a): ');
+b = input('Enter the end of the interval (b): ');
+y0 = input('Enter the initial condition y(a): ');
+h = input('Enter the step size h: ');
+
+% Compute number of steps
+n = round((b - a) / h);
+
+% Initialize arrays
+x = a:h:b;
+y = zeros(1, length(x));
+y(1) = y0;
+
+% Runge-Kutta 4th Order Method
+for i = 1:n
+    k1 = h * f(x(i), y(i));
+    k2 = h * f(x(i) + h/2, y(i) + k1/2);
+    k3 = h * f(x(i) + h/2, y(i) + k2/2);
+    k4 = h * f(x(i) + h, y(i) + k3);
+    
+    y(i+1) = y(i) + (k1 + 2*k2 + 2*k3 + k4) / 6;
+end
+
+% Plot the solution
+plot(x, y, 'b-', 'LineWidth', 2);
+xlabel('x');
+ylabel('y');
+title('Solution of dy/dx = -2xy using RK4');
+grid on;
+legend('Runge-Kutta Approximation');

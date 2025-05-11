@@ -1,0 +1,54 @@
+clc; clear; close all;
+
+% Given system of equations in matrix form Ax = B
+A = [3  2 -1;
+     2 -2  4;
+    -1 0.5 -1];
+
+B = [1; -2; 0];
+
+%% (a) Solve using Gaussian Elimination
+X_gauss = A \ B;
+
+% Display solution in tabular form
+disp('Solution using Gaussian Elimination:');
+var_names = {'x', 'y', 'z'};
+solution_table = table(X_gauss, 'RowNames', var_names);
+disp(solution_table);
+
+%% (b) Solve using the Inverse Matrix Method
+if det(A) ~= 0  % Check if the matrix is invertible
+    X_inv = inv(A) * B;
+else
+    error('Matrix A is singular; inverse method not possible.');
+end
+
+% Display solution from Inverse Matrix Method
+disp('Solution using Inverse Matrix Method:');
+solution_table_inv = table(X_inv, 'RowNames', var_names);
+disp(solution_table_inv);
+
+%% (c) 3D Representation (Graphical Representation)
+[x_grid, y_grid] = meshgrid(-5:0.5:5, -5:0.5:5);
+
+% Solve for z in terms of x and y
+z1 = (1 - 3*x_grid - 2*y_grid) / -1;
+z2 = (-2 - 2*x_grid + 2*y_grid) / 4;
+z3 = (0 + x_grid - 0.5*y_grid) / -1;
+
+figure;
+hold on;
+surf(x_grid, y_grid, z1, 'FaceAlpha', 0.5, 'EdgeColor', 'none');
+surf(x_grid, y_grid, z2, 'FaceAlpha', 0.5, 'EdgeColor', 'none');
+surf(x_grid, y_grid, z3, 'FaceAlpha', 0.5, 'EdgeColor', 'none');
+
+plot3(X_gauss(1), X_gauss(2), X_gauss(3), 'ro', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Solution (x,y,z)');
+
+xlabel('x'); ylabel('y'); zlabel('z');
+title('Graphical Representation of the System');
+legend('Equation 1', 'Equation 2', 'Equation 3', 'Solution');
+grid on; hold off;
+
+%% (d) Discuss error or difference (if any)
+error_diff = norm(X_gauss - X_inv);
+fprintf('Error difference between Gaussian elimination and inverse matrix method: %.10f\n', error_diff);

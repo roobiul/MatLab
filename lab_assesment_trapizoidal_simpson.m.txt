@@ -1,0 +1,65 @@
+clc; clear; close all;
+
+% Define the function
+f = @(x) 1 ./ (1 + x);
+
+% Define integration limits
+a = 0;
+b = 1;
+
+% Step size for Trapezoidal Rule
+h_trap = 0.25;
+n_trap = (b - a) / h_trap; % Number of subintervals
+
+% Step size for Simpson’s Rule
+h_simp = 0.125;
+n_simp = (b - a) / h_simp; % Number of subintervals (must be even)
+
+% ---------------- TRAPEZOIDAL RULE ----------------
+x_trap = a:h_trap:b;
+y_trap = f(x_trap);
+I_trap = (h_trap / 2) * (y_trap(1) + 2 * sum(y_trap(2:end-1)) + y_trap(end));
+
+% ---------------- SIMPSON'S RULE ----------------
+x_simp = a:h_simp:b;
+y_simp = f(x_simp);
+I_simp = (h_simp / 3) * (y_simp(1) + 4 * sum(y_simp(2:2:end-1)) + 2 * sum(y_simp(3:2:end-2)) + y_simp(end));
+
+% ---------------- DISPLAY RESULTS IN TABULAR FORM ----------------
+fprintf('\nNumerical Integration Results:\n');
+fprintf('---------------------------------------------------\n');
+fprintf('| Method        | Step Size (h) | Approx. Integral |\n');
+fprintf('---------------------------------------------------\n');
+fprintf('| Trapezoidal   |    %.3f      |     %.6f    |\n', h_trap, I_trap);
+fprintf('| Simpson’s     |    %.3f      |     %.6f    |\n', h_simp, I_simp);
+fprintf('---------------------------------------------------\n');
+
+% Create table for Trapezoidal Rule
+trapTable = table(x_trap', y_trap', 'VariableNames', {'x', 'f(x)'});
+disp('Trapezoidal Rule Table:');
+disp(trapTable);
+
+% Create table for Simpson’s Rule
+simpTable = table(x_simp', y_simp', 'VariableNames', {'x', 'f(x)'});
+disp('Simpson’s Rule Table:');
+disp(simpTable);
+
+% ---------------- PLOT THE FUNCTION AND APPROXIMATIONS ----------------
+figure;
+hold on;
+x_vals = linspace(a, b, 100);
+y_vals = f(x_vals);
+plot(x_vals, y_vals, 'b-', 'LineWidth', 2); % Function curve
+
+% Trapezoidal Rule Approximation
+plot(x_trap, y_trap, 'ro-', 'MarkerSize', 6, 'MarkerFaceColor', 'r');
+
+% Simpson's Rule Approximation
+plot(x_simp, y_simp, 'gs-', 'MarkerSize', 6, 'MarkerFaceColor', 'g');
+
+grid on;
+title('Numerical Integration using Trapezoidal and Simpson’s Rule');
+xlabel('x');
+ylabel('f(x)');
+legend('f(x) = 1/(1+x)', 'Trapezoidal Approx.', 'Simpson’s Approx.', 'Location', 'Best');
+hold off;

@@ -1,0 +1,78 @@
+clc; clear; close all;
+
+% Define the function
+f = @(x) x.^3 - 2*x - 5;
+
+% Accept user input for interval [a, b], tolerance, and max iterations
+a = input('Enter the lower bound (a): ');
+b = input('Enter the upper bound (b): ');
+tol = input('Enter the tolerance: ');
+max_iter = input('Enter the maximum number of iterations: ');
+
+% Check if initial guesses have opposite signs
+if f(a) * f(b) > 0
+    disp('Error: f(a) and f(b) must have opposite signs. Choose a valid interval.');
+else
+    % Initialize iteration counter and storage for table
+    iter = 0;
+    tableData = []; % Empty array to store iteration data
+    
+    % Store values for plotting
+    a_vals = [];
+    b_vals = [];
+    c_vals = [];
+    
+    fprintf('\nIteration |     a         |     b         |     c         |   f(c)   \n');
+    fprintf('-------------------------------------------------------------------\n');
+    
+    while (b - a)/2 > tol && iter < max_iter
+        c = (a + b) / 2; % Midpoint
+        fc = f(c);
+        
+        % Store iteration data
+        tableData = [tableData; iter, a, b, c, fc];
+        a_vals = [a_vals, a];
+        b_vals = [b_vals, b];
+        c_vals = [c_vals, c];
+        
+        % Display results in tabular form
+        fprintf('%5d     | %10.6f | %10.6f | %10.6f | %10.6f \n', iter, a, b, c, fc);
+        
+        if fc == 0
+            break; % Exact root found
+        elseif f(a) * fc < 0
+            b = c; % Root is in left subinterval
+        else
+            a = c; % Root is in right subinterval
+        end
+        iter = iter + 1;
+    end
+    
+    % Display final result
+    root = (a + b) / 2;
+    fprintf('\nApproximate root: %.6f\n', root);
+    fprintf('Iterations taken: %d\n', iter);
+
+    % Plot the function
+    figure;
+    x_vals = linspace(a_vals(1), b_vals(1), 100);
+    y_vals = f(x_vals);
+    plot(x_vals, y_vals, 'b-', 'LineWidth', 2); % Function curve
+    hold on;
+    
+    % Mark midpoint estimates at each step
+    plot(c_vals, f(c_vals), 'ro-', 'MarkerSize', 6, 'MarkerFaceColor', 'r');
+    
+    % Mark the final root
+    plot(root, f(root), 'ks', 'MarkerSize', 10, 'MarkerFaceColor', 'k');
+    
+    grid on;
+    title('Bisection Method Convergence');
+    xlabel('x');
+    ylabel('f(x)');
+    legend('f(x)', 'Midpoints', 'Final Root');
+    
+    % Display the table in MATLAB as a formatted table
+    resultsTable = array2table(tableData, 'VariableNames', {'Iteration', 'a', 'b', 'c', 'f(c)'});
+    disp(resultsTable);
+end

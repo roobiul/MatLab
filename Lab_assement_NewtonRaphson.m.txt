@@ -1,0 +1,54 @@
+% MATLAB Script to find a root of f(x) = x*sin(x) + cos(x) using Newton-Raphson method
+
+clc; clear; close all;
+
+% Define function and its derivative
+f = @(x) x .* sin(x) + cos(x);
+df = @(x) sin(x) + x .* cos(x) - sin(x);
+
+% Initial guess
+x0 = 0.5;
+tolerance = 1e-6;
+max_iterations = 10;
+
+% Initialize variables for storing results
+iterations = [];
+x_values = x0;
+f_values = f(x0);
+
+% Newton-Raphson Iteration
+for i = 1:max_iterations
+    x1 = x0 - f(x0) / df(x0);
+    iterations = [iterations; i, x0, f(x0), df(x0), x1];
+    
+    % Update values
+    x0 = x1;
+    x_values = [x_values, x0];
+    f_values = [f_values, f(x0)];
+    
+    % Check for convergence
+    if abs(f(x0)) < tolerance
+        break;
+    end
+end
+
+% Display results in a table
+disp(' Iteration     x_n          f(x_n)       f''(x_n)      x_n+1');
+disp(iterations);
+
+% Plot function and root
+x_range = linspace(-4, 4, 400);
+y_values = f(x_range);
+
+figure;
+plot(x_range, y_values, 'b', 'LineWidth', 1.5);
+hold on;
+yline(0, 'k--'); % x-axis
+xline(x0, 'r--', ['Root at x ≈ ', num2str(x0, '%.6f')]); % Root marker
+scatter(x_values, zeros(size(x_values)), 'ro', 'filled'); % Iteration points
+xlabel('x');
+ylabel('f(x)');
+title('Newton-Raphson Method for Finding Root');
+legend('f(x) = xsin(x) + cos(x)', 'y=0', 'Root', 'Iterations', 'Location', 'best');
+grid on;
+hold off;

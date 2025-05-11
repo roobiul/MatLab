@@ -1,0 +1,47 @@
+clc; clear; close all;
+
+% Define system matrix A and right-hand side vector B
+A = [4 -1  1; 
+     2  5 -2; 
+     1 -3  6];
+
+B = [7; -4; 6];
+
+%% (a) Solve using Gaussian Elimination
+X_gauss = A \ B;
+
+% Display solution in tabular form
+disp('Solution using Gaussian Elimination:');
+var_names = {'x', 'y', 'z'};
+solution_table = table(X_gauss, 'RowNames', var_names);
+disp(solution_table);
+
+%% (b) Implement Gauss-Seidel Method
+tol = 1e-4; % Convergence tolerance
+max_iter = 100; % Maximum number of iterations
+x0 = [0; 0; 0]; % Initial guess
+
+% Gauss-Seidel function
+[X_gauss_seidel, errors] = gauss_seidel(A, B, x0, tol, max_iter);
+
+% Display Gauss-Seidel results
+disp('Solution using Gauss-Seidel Method:');
+solution_table_gs = table(X_gauss_seidel, 'RowNames', var_names);
+disp(solution_table_gs);
+
+%% (c) Plot error at each iteration
+figure;
+semilogy(errors, '-o', 'LineWidth', 1.5, 'MarkerSize', 5);
+xlabel('Iteration Number');
+ylabel('Error (Log Scale)');
+title('Gauss-Seidel Convergence');
+grid on;
+
+%% (d) Compare solutions
+error_diff = norm(X_gauss - X_gauss_seidel);
+fprintf('Error difference between Gaussian Elimination and Gauss-Seidel: %.10f\n', error_diff);
+
+% Efficiency discussion
+disp('Efficiency Comparison:');
+disp('Gaussian Elimination gives an exact solution in one step but involves matrix factorization.');
+disp('Gauss-Seidel is iterative and requires multiple steps but can be more efficient for large systems.');

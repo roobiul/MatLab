@@ -1,0 +1,72 @@
+clc; clear; close all;
+
+% Given data points (x, y)
+x = [1 2 3 4];  % X values
+y = [2 8 18 32]; % Y values
+
+n = length(x); % Number of data points
+h = x(2) - x(1); % Step size (assuming equal spacing)
+X_val = 2.5; % Point where interpolation is required
+
+% Forward Difference Table
+diff_table = zeros(n, n);
+diff_table(:,1) = y'; % First column is y-values
+
+for j = 2:n
+    for i = 1:n-j+1
+        diff_table(i,j) = diff_table(i+1,j-1) - diff_table(i,j-1);
+    end
+end
+
+disp('Forward Difference Table:');
+disp(diff_table);
+
+% Newton Forward Interpolation formula
+p = (X_val - x(1)) / h;
+interp_value = y(1); % Initial term
+term = 1;
+
+for k = 1:n-1
+    term = term * (p - (k - 1)) / k; % Compute factorial term iteratively
+    interp_value = interp_value + term * diff_table(1, k+1);
+end
+
+fprintf('Estimated value at x = %.2f is y = %.4f\n', X_val, interp_value);
+
+% Plot results
+X_interp = linspace(min(x), max(x), 100);
+Y_interp = arrayfun(@(Xq) newton_forward(x, y, Xq), X_interp);
+
+figure;
+plot(x, y, 'ro', 'MarkerSize', 8, 'LineWidth', 2); % Given data points
+hold on;
+plot(X_interp, Y_interp, 'b-', 'LineWidth', 1.5); % Interpolated curve
+plot(X_val, interp_value, 'ks', 'MarkerSize', 10, 'LineWidth', 2); % Estimated point
+xlabel('x'); ylabel('y');
+title('Newton Forward Interpolation');
+legend('Given Data', 'Interpolated Curve', 'Estimated Point', 'Location', 'Best');
+grid on;
+
+% Function to evaluate Newton Forward Interpolation at any x
+function y_interp = newton_forward(x, y, X_val)
+    n = length(x);
+    h = x(2) - x(1);
+    
+    % Forward Difference Table
+    diff_table = zeros(n, n);
+    diff_table(:,1) = y';
+    for j = 2:n
+        for i = 1:n-j+1
+            diff_table(i,j) = diff_table(i+1,j-1) - diff_table(i,j-1);
+        end
+    end
+    
+    % Newton Forward Interpolation
+    p = (X_val - x(1)) / h;
+    y_interp = y(1);
+    term = 1;
+    for k = 1:n-1
+        term = term * (p - (k - 1)) / k;
+        y_interp = y_interp + term * diff_table(1, k+1);
+    end
+end

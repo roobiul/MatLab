@@ -1,0 +1,70 @@
+clc; clear; close all;
+
+% Define matrix A
+A = [2 -1 1; 
+     3  3 9; 
+     3  3 5];
+
+% (a) Compute the inverse of A
+if det(A) ~= 0  % Check if A is invertible
+    A_inv = inv(A);
+    disp('Inverse of A:');
+    disp(A_inv);
+
+    % Verify by multiplying A⁻¹ * A
+    I_verify = A_inv * A;
+    disp('Verification (A⁻¹ * A):');
+    disp(I_verify);
+else
+    error('Matrix A is singular; inverse cannot be computed.');
+end
+
+% Display results in tabular form
+var_names = {'Row 1', 'Row 2', 'Row 3'};
+inv_table = array2table(A_inv, 'RowNames', var_names);
+disp('Inverse Matrix A⁻¹ (in Table Format):');
+disp(inv_table);
+
+verify_table = array2table(I_verify, 'RowNames', var_names);
+disp('Verification Matrix (A⁻¹ * A):');
+disp(verify_table);
+
+%% (b) Perform LU decomposition without pivoting
+[L, U] = lu(A, 'vector');
+
+disp('Lower Triangular Matrix L:');
+disp(L);
+disp('Upper Triangular Matrix U:');
+disp(U);
+
+% Verify LU decomposition by reconstructing A
+A_reconstructed = L * U;
+disp('Reconstructed Matrix A (L * U):');
+disp(A_reconstructed);
+
+%% (c) Solve Ax = b using LU decomposition
+b = [3; 12; 6];
+
+% Forward substitution to solve L*y = b
+y = L \ b;
+
+% Backward substitution to solve U*x = y
+x = U \ y;
+
+% Display solution
+disp('Solution x (from LU decomposition):');
+solution_table = table(x, 'VariableNames', {'Solution'});
+disp(solution_table);
+
+%% (d) 3D Plot of solutions x, y, z
+[x_vals, y_vals] = meshgrid(-5:0.5:5, -5:0.5:5);
+z_vals = -(A(1,1) * x_vals + A(1,2) * y_vals - b(1)) / A(1,3);
+
+figure;
+surf(x_vals, y_vals, z_vals, 'FaceAlpha', 0.5, 'EdgeColor', 'none');
+hold on;
+plot3(x(1), x(2), x(3), 'ro', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Solution (x,y,z)');
+xlabel('x'); ylabel('y'); zlabel('z');
+title('3D Representation of Solution for Ax = b');
+legend;
+grid on; hold off;

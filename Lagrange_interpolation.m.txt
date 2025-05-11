@@ -1,0 +1,48 @@
+clc; clear; close all;
+
+% Given data points
+x = [1 2 3 4];
+y = [2 8 18 32];
+
+% Define symbolic variable for interpolation polynomial
+syms X;
+n = length(x);
+L = sym(0); % Initialize Lagrange interpolation polynomial
+
+% Construct Lagrange polynomial
+for i = 1:n
+    % Compute Lagrange basis polynomial L_i(X)
+    Li = 1;
+    for j = 1:n
+        if j ~= i
+            Li = Li * (X - x(j)) / (x(i) - x(j));
+        end
+    end
+    L = L + Li * y(i);
+end
+
+% Display the Lagrange interpolation polynomial
+disp('Lagrange Interpolation Polynomial:');
+L = expand(L); % Expand the polynomial
+disp(vpa(L, 4));
+
+% Estimate y at x = 2.5
+x_interp = 2.5;
+y_interp = double(subs(L, X, x_interp));
+fprintf('Estimated y at x = %.2f is: %.4f\n', x_interp, y_interp);
+
+% Plot given data points and interpolation polynomial
+X_vals = linspace(min(x), max(x), 100);
+Y_vals = double(subs(L, X_vals));
+
+figure;
+plot(x, y, 'ro', 'MarkerFaceColor', 'r', 'DisplayName', 'Data Points');
+hold on;
+plot(X_vals, Y_vals, 'b-', 'LineWidth', 1.5, 'DisplayName', 'Lagrange Polynomial');
+plot(x_interp, y_interp, 'ks', 'MarkerFaceColor', 'k', 'DisplayName', sprintf('y(%.2f) = %.2f', x_interp, y_interp));
+
+xlabel('x'); ylabel('y');
+title('Lagrange Interpolation');
+legend;
+grid on;
+hold off;
